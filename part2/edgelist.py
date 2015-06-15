@@ -114,7 +114,7 @@ class Tree(object):
         for parent, edge in self.parent_to_child.items():
             yield edge.parent, edge.child
 
-def sprout_tree(stream):
+def grow_trees(stream):
     tree = Tree()
     edge_added = signal('edge_added')
     roots = 0
@@ -124,8 +124,8 @@ def sprout_tree(stream):
             tree.add(candidate)
             if tree.is_root(candidate):
                 roots += 1
-                edge_added.send('sprout_tree', tree_name=tree.name, edge=candidate)
-            edge_added.send('sprout_tree', tree_name=tree.name, edge=candidate)
+                edge_added.send('grow_trees', tree_name=tree.name, edge=candidate)
+            edge_added.send('grow_trees', tree_name=tree.name, edge=candidate)
     return tree
 
 conn = StrictRedis()
@@ -143,7 +143,7 @@ signal('edge_added').connect(online_tree_size)
 signal('edge_added').connect(online_tree_depth)
 
 datastream = stream(nodes=10)
-tree = sprout_tree(datastream)
+tree = grow_trees(datastream)
 
 # Calculate depth with bfs 
 roots = tree.get_roots()
